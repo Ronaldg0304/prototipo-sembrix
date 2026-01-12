@@ -49,6 +49,17 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ProductDto update(Long id, ProductDto dto) {
+        Product p = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+        p.setName(dto.getName());
+        p.setDescription(dto.getDescription());
+        p.setCategory(dto.getCategory());
+        p.setUnitOfMeasure(dto.getUnitOfMeasure());
+        Product saved = repository.save(p);
+        return mapper.toDto(saved);
+    }
+
+    @Override
     public void delete(Long id) {
         if (!repository.existsById(id)) {
             throw new ResourceNotFoundException("Product not found");

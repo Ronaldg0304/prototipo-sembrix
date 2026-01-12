@@ -8,6 +8,8 @@ public interface ProductionExpenseService {
     ProductionExpenseDto create(ProductionExpenseDto dto);
     ProductionExpenseDto findById(Long id);
     List<ProductionExpenseDto> findAll();
+    public double calculateTotalCostByInventory(Long inventoryId);
+    public double calculateUnitCost(Long inventoryId, Double currentStock);
     void delete(Long id);
 }
 

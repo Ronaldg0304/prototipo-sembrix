@@ -49,6 +49,18 @@ public class ProfileProducerServiceImpl implements ProfileProducerService {
     }
 
     @Override
+    public ProfileProducerDto update(Long id, ProfileProducerDto dto) {
+        ProfileProducer p = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("ProfileProducer not found"));
+        p.setFarmName(dto.getFarmName());
+        p.setFarmSize(dto.getFarmSize());
+        p.setRegion(dto.getRegion());
+        p.setMunicipality(dto.getMunicipality());
+        p.setAssociationName(dto.getAssociationName());
+        ProfileProducer updated = repository.save(p);
+        return mapper.toDto(updated);
+    }
+
+    @Override
     public void delete(Long id) {
         if (!repository.existsById(id)) {
             throw new ResourceNotFoundException("ProfileProducer not found");

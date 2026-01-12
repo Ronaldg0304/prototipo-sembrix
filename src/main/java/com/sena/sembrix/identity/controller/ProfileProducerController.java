@@ -42,6 +42,12 @@ public class ProfileProducerController {
         return ResponseHelper.ok(list);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody ProfileProducerDto dto) {
+        ProfileProducerDto p = service.update(id, dto);
+        return ResponseHelper.ok(p);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         service.delete(id);

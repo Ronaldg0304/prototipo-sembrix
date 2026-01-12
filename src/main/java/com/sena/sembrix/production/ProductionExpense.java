@@ -21,6 +21,8 @@ public class ProductionExpense extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String description;
+
     private Double totalAmount;
 }
 

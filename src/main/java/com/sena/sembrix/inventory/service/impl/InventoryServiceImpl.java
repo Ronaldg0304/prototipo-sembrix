@@ -38,6 +38,11 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
+    public Inventory findEntityById(Long id) {
+        return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Inventory not found"));
+    }
+
+    @Override
     public List<InventoryDto> findByProfileProducerId(Long profileProducerId) {
         return repository.findByProfileProducerId(profileProducerId).stream().map(mapper::toDto).collect(Collectors.toList());
     }
@@ -50,6 +55,16 @@ public class InventoryServiceImpl implements InventoryService {
     @Override
     public List<InventoryDto> findAll() {
         return repository.findAll().stream().map(mapper::toDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public InventoryDto update(Long id, InventoryDto dto) {
+        Inventory i = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Inventory not found"));
+        i.setCurrentStock(dto.getCurrentStock());
+        i.setUnitPrice(dto.getUnitPrice());
+        i.setAlertThreshold(dto.getAlertThreshold());
+        Inventory saved = repository.save(i);
+        return mapper.toDto(saved);
     }
 
     @Override

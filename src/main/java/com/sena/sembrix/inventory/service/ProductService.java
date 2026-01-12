@@ -9,6 +9,7 @@ public interface ProductService {
     ProductDto findById(Long id);
     ProductDto findByName(String name);
     List<ProductDto> findAll();
+    ProductDto update(Long id, ProductDto dto);
     void delete(Long id);
 }
 

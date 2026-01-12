@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,6 +59,17 @@ public class MarketPriceServiceImpl implements MarketPriceService {
             throw new ResourceNotFoundException("MarketPrice not found");
         }
         repository.deleteById(id);
+    }
+
+    /**
+     * Obtiene el precio promedio del mercado para un producto en una región.
+     */
+    public Optional<MarketPriceDto> getRegionalPrice(Long productId, String region) {
+        Optional<MarketPrice> optionalMarketPrice = repository.findByProductIdAndRegion(productId, region);
+        if (optionalMarketPrice.isEmpty()) {
+            throw new ResourceNotFoundException("Market price not found with id: " + productId + " and region: " + region);
+        }
+        return optionalMarketPrice.map(mapper::toDto);
     }
 }
 

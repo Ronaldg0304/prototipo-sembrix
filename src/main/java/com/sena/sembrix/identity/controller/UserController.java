@@ -37,6 +37,12 @@ public class UserController {
         return ResponseHelper.ok(list);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody UserRequestDto dto) {
+        UserResponseDto u = userService.update(id, dto);
+        return ResponseHelper.ok(u);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         userService.delete(id);

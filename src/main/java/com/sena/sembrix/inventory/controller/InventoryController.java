@@ -1,6 +1,10 @@
 package com.sena.sembrix.inventory.controller;
 
+import com.sena.sembrix.common.pricing.dto.PriceAnalysisResponseDTO;
+import com.sena.sembrix.common.pricing.service.PricingEngineService;
+import com.sena.sembrix.common.web.ApiResponse;
 import com.sena.sembrix.common.web.ResponseHelper;
+import com.sena.sembrix.inventory.Inventory;
 import com.sena.sembrix.inventory.dto.InventoryDto;
 import com.sena.sembrix.inventory.service.InventoryService;
 import org.springframework.http.ResponseEntity;
@@ -13,9 +17,11 @@ import java.util.List;
 public class InventoryController {
 
     private final InventoryService service;
+    private final PricingEngineService pricingEngineService;
 
-    public InventoryController(InventoryService service) {
+    public InventoryController(InventoryService service, PricingEngineService pricingEngineService) {
         this.service = service;
+        this.pricingEngineService = pricingEngineService;
     }
 
     @PostMapping
@@ -48,10 +54,23 @@ public class InventoryController {
         return ResponseHelper.ok(list);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody InventoryDto dto) {
+        InventoryDto i = service.update(id, dto);
+        return ResponseHelper.ok(i);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseHelper.ok(null);
+    }
+
+    @GetMapping("/{id}/analysis")
+    public ResponseEntity<ApiResponse<PriceAnalysisResponseDTO>> getPriceAnalysis(@PathVariable Long id) {
+        Inventory inventory = service.findEntityById(id); // Método que devuelve la Entidad, no el DTO
+        PriceAnalysisResponseDTO analysis = pricingEngineService.analyzeInventoryPrice(inventory);
+        return ResponseHelper.ok(analysis);
     }
 }
 

@@ -1,5 +1,7 @@
 package com.sena.sembrix.identity.service.impl;
 
+import com.sena.sembrix.identity.Role;
+import com.sena.sembrix.identity.Status;
 import com.sena.sembrix.identity.UserEntity;
 import com.sena.sembrix.identity.dto.UserRequestDto;
 import com.sena.sembrix.identity.dto.UserResponseDto;
@@ -46,6 +48,26 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserResponseDto> findAll() {
         return userRepository.findAll().stream().map(userMapper::toDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public UserResponseDto update(Long id, UserRequestDto dto) {
+        UserEntity u = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (dto.getEmail() != null && !dto.getEmail().equals(u.getEmail())) {
+            if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
+                throw new IllegalArgumentException("Email already in use: " + dto.getEmail());
+            }
+        }
+        u.setFirstName(dto.getFirstName());
+        u.setMiddleName(dto.getMiddleName());
+        u.setLastName(dto.getLastName());
+        u.setSecondLastName(dto.getSecondLastName());
+        u.setEmail(dto.getEmail());
+        u.setRole(Role.valueOf(dto.getRole()));
+        u.setStatus(Status.valueOf(dto.getStatus()));
+        UserEntity saved = userRepository.save(u);
+        return userMapper.toDto(saved);
     }
 
     @Override

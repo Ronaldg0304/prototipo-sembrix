@@ -1,8 +1,10 @@
 package com.sena.sembrix.production.service.impl;
 
 import com.sena.sembrix.production.ProductionExpense;
+import com.sena.sembrix.production.ProductionExpenseItem;
 import com.sena.sembrix.production.dto.ProductionExpenseDto;
 import com.sena.sembrix.production.mapper.ProductionExpenseMapper;
+import com.sena.sembrix.production.repository.ProductionExpenseItemRepository;
 import com.sena.sembrix.production.repository.ProductionExpenseRepository;
 import com.sena.sembrix.production.service.ProductionExpenseService;
 import com.sena.sembrix.exception.ResourceNotFoundException;
@@ -17,10 +19,12 @@ import java.util.stream.Collectors;
 public class ProductionExpenseServiceImpl implements ProductionExpenseService {
 
     private final ProductionExpenseRepository repository;
+    private final ProductionExpenseItemRepository expenseItemRepository;
     private final ProductionExpenseMapper mapper;
 
-    public ProductionExpenseServiceImpl(ProductionExpenseRepository repository, ProductionExpenseMapper mapper) {
+    public ProductionExpenseServiceImpl(ProductionExpenseRepository repository, ProductionExpenseItemRepository expenseItemRepository, ProductionExpenseMapper mapper) {
         this.repository = repository;
+        this.expenseItemRepository = expenseItemRepository;
         this.mapper = mapper;
     }
 
@@ -48,6 +52,26 @@ public class ProductionExpenseServiceImpl implements ProductionExpenseService {
             throw new ResourceNotFoundException("ProductionExpense not found");
         }
         repository.deleteById(id);
+    }
+
+    /**
+     * Calcula el costo total acumulado de un inventario específico.
+     */
+    @Override
+    public double calculateTotalCostByInventory(Long inventoryId) {
+        return expenseItemRepository.findByInventoryId(inventoryId)
+                .stream()
+                .mapToDouble(ProductionExpenseItem::getAmount)
+                .sum();
+    }
+
+    /**
+     * Calcula el costo por unidad (Costo Total / Stock Actual).
+     */
+    @Override
+    public double calculateUnitCost(Long inventoryId, Double currentStock) {
+        if (currentStock <= 0) return 0.0;
+        return calculateTotalCostByInventory(inventoryId) / currentStock;
     }
 }
 
