@@ -1,6 +1,7 @@
 package com.sena.sembrix.sales;
 
 import com.sena.sembrix.common.audit.Auditable;
+import com.sena.sembrix.identity.ProfileProducer;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,5 +30,9 @@ public class Customer extends Auditable {
     private String email;
 
     private String address;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "profile_producer_id", nullable = false)
+    private ProfileProducer profileProducer;
 }
 

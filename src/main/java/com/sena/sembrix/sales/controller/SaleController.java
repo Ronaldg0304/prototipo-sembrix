@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/sales")
+@RequestMapping("/api/v1/sales")
+@CrossOrigin(origins = "http://localhost:5173")
 public class SaleController {
 
     private final SaleService service;
@@ -43,8 +44,13 @@ public class SaleController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAll() {
-        List<SaleDto> list = service.findAll();
+    public ResponseEntity<?> getAll(@RequestParam(required = false) Long profileProducerId) {
+        List<SaleDto> list;
+        if (profileProducerId != null) {
+            list = service.findByProfileProducerId(profileProducerId);
+        } else {
+            list = service.findAll();
+        }
         return ResponseHelper.ok(list);
     }
 

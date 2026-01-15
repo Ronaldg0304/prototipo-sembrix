@@ -54,6 +54,21 @@ public class MarketPriceServiceImpl implements MarketPriceService {
     }
 
     @Override
+    public MarketPriceDto update(Long id, MarketPriceDto dto) {
+        MarketPrice entity = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("MarketPrice not found"));
+        
+        if (dto.getAverageMarketPrice() != null) entity.setAverageMarketPrice(dto.getAverageMarketPrice());
+        if (dto.getMaxPrice() != null) entity.setMaxPrice(dto.getMaxPrice());
+        if (dto.getMinPrice() != null) entity.setMinPrice(dto.getMinPrice());
+        if (dto.getTrend() != null) entity.setTrend(dto.getTrend());
+        if (dto.getRegion() != null) entity.setRegion(dto.getRegion());
+        
+        MarketPrice saved = repository.save(entity);
+        return mapper.toDto(saved);
+    }
+
+    @Override
     public void delete(Long id) {
         if (!repository.existsById(id)) {
             throw new ResourceNotFoundException("MarketPrice not found");

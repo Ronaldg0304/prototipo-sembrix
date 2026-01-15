@@ -44,8 +44,27 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public List<CustomerDto> findByProfileProducerId(Long profileProducerId) {
+        return repository.findByProfileProducerId(profileProducerId).stream()
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<CustomerDto> findAll() {
         return repository.findAll().stream().map(mapper::toDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public CustomerDto update(Long id, CustomerDto dto) {
+        Customer c = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Inventory not found"));
+        c.setFirstName(dto.getFirstName());
+        c.setLastName(dto.getLastName());
+        c.setEmail(dto.getEmail());
+        c.setPhone(dto.getPhone());
+        c.setAddress(dto.getAddress());
+        Customer saved = repository.save(c);
+        return mapper.toDto(saved);
     }
 
     @Override

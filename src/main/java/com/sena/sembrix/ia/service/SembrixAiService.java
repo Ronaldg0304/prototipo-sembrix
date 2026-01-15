@@ -37,4 +37,15 @@ public class SembrixAiService {
         // 3. Obtener respuesta de la IA externa
         return aiChatClient.generateResponse(fullPrompt);
     }
+
+    public String getGeneralAdvice(Long profileId, String question) {
+        // 1. Recuperar todo el inventario del productor
+        List<Inventory> inventories = inventoryRepository.findByProfileProducerId(profileId);
+        
+        // 2. Construir prompt general
+        String fullPrompt = promptBuilder.buildGeneralContextualPrompt(inventories, question);
+        
+        // 3. Obtener respuesta
+        return aiChatClient.generateResponse(fullPrompt);
+    }
 }

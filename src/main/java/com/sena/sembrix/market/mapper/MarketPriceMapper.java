@@ -42,6 +42,8 @@ public class MarketPriceMapper {
         dto.setTrend(entity.getTrend());
         if (entity.getProduct() != null) {
             dto.setProductId(entity.getProduct().getId());
+            dto.setProductName(entity.getProduct().getName());
+            dto.setProductCategory(entity.getProduct().getCategory());
         }
         return dto;
     }

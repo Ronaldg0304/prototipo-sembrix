@@ -8,6 +8,7 @@ public interface InvoiceService {
     InvoiceDto create(InvoiceDto dto);
     InvoiceDto findById(Long id);
     List<InvoiceDto> findByCustomerId(Long customerId);
+    List<InvoiceDto> findByProfileProducerId(Long profileProducerId);
     List<InvoiceDto> findAll();
     void delete(Long id);
 }

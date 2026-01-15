@@ -43,4 +43,30 @@ public class AiPromptBuilder {
                 userQuestion
         );
     }
+
+    public String buildGeneralContextualPrompt(List<Inventory> inventories, String userQuestion) {
+        StringBuilder inventorySummary = new StringBuilder();
+        for (Inventory inv : inventories) {
+            inventorySummary.append(String.format(
+                "- %s: Stock %d, Precio $%.2f\n",
+                inv.getProduct().getName(),
+                inv.getCurrentStock().intValue(),
+                inv.getUnitPrice()
+            ));
+        }
+
+        return String.format(
+                """
+                        Eres el Asesor Inteligente de Sembrix. Se te ha proporcionado un resumen de TODO el inventario del productor.
+                        
+                        RESUMEN DE INVENTARIO:
+                        %s
+                        
+                        PREGUNTA DEL USUARIO: "%s"
+                        
+                        INSTRUCCIONES: Analiza el panorama general. Si tiene muchos productos, ofrece consejos de diversificación o rotación. Si algunos tienen stock bajo, recuérdaselo. Responde de forma técnica pero accesible en español.""",
+                inventorySummary.toString(),
+                userQuestion
+        );
+    }
 }

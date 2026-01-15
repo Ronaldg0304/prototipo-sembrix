@@ -1,5 +1,11 @@
 package com.sena.sembrix.security.service;
 
+import com.sena.sembrix.identity.ProfileProducer;
+import com.sena.sembrix.identity.UserEntity;
+import com.sena.sembrix.identity.dto.ProfileProducerDto;
+import com.sena.sembrix.identity.repository.UserRepository;
+import com.sena.sembrix.identity.service.impl.ProfileProducerServiceImpl;
+import com.sena.sembrix.identity.service.impl.UserServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -22,9 +28,13 @@ import java.util.function.Function;
 public class JwtService {
 
     private final UserDetailsService userDetailsService;
+    private final ProfileProducerServiceImpl profileProducerService;
+    private final UserRepository userRepository;
 
-    public JwtService(UserDetailsService userDetailsService) {
+    public JwtService(UserDetailsService userDetailsService, ProfileProducerServiceImpl profileProducerService, UserRepository userRepository) {
         this.userDetailsService = userDetailsService;
+        this.profileProducerService = profileProducerService;
+        this.userRepository = userRepository;
     }
 
     @Value("${jwt.secretKey}")
@@ -46,7 +56,17 @@ public class JwtService {
     public String generateToken(
             Map<String, Objects> extraClaims,
             UserDetails userDetails) {
+            Map<String, Object> claims = new HashMap<>(extraClaims);
+            UserEntity userEntity = userRepository.findByEmail(userDetails.getUsername()).orElse(null);
+            ProfileProducerDto profileProducer = null;
+            if (userEntity != null) {
+            profileProducer = profileProducerService.findByUserId(userEntity.getId());
+             }
+            if (profileProducer != null) {
+            claims.put("profileProducerId", profileProducer.getId());
+            }
         return Jwts.builder()
+                .setClaims(claims)
                 .setSubject(userDetails.getUsername())
                 .claim("roles", userDetails.getAuthorities())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
@@ -56,7 +76,7 @@ public class JwtService {
     }
     public Boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUserName(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token) && userDetails.isEnabled());
     }
 
     private boolean isTokenExpired(String token) {

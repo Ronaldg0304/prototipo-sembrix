@@ -1,11 +1,9 @@
 package com.sena.sembrix.security;
 
+import com.sena.sembrix.common.audit.Auditable;
 import com.sena.sembrix.identity.UserEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -14,17 +12,20 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PasswordResetToken {
+@EqualsAndHashCode(callSuper = true)
+@Table(name = "password_reset_tokens")
+public class PasswordResetToken extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String token;
+    private LocalDateTime expiryDateToken;
 
     @OneToOne(targetEntity = UserEntity.class, fetch = FetchType.EAGER)
     @JoinColumn(nullable = false, name = "user_id")
     private UserEntity user;
 
-    private LocalDateTime expiryDateToken;
+
 
 }

@@ -27,9 +27,11 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
 
-        http.csrf(AbstractHttpConfigurer::disable)
+        http
+                .cors(cors -> cors.configure(http))
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request.requestMatchers(
-                                "/api/auth/**",  // Your specific API access,
+                                "/api/v1/auth/**",  // Your specific API access,
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",

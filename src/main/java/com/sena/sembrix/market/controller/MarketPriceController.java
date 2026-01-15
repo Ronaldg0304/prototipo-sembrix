@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/market-prices")
+@RequestMapping("/api/v1/market-prices")
+@CrossOrigin(origins = "http://localhost:5173")
 public class MarketPriceController {
 
     private final MarketPriceService service;
@@ -46,6 +47,12 @@ public class MarketPriceController {
     public ResponseEntity<?> getAll() {
         List<MarketPriceDto> list = service.findAll();
         return ResponseHelper.ok(list);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody MarketPriceDto dto) {
+        MarketPriceDto updated = service.update(id, dto);
+        return ResponseHelper.ok(updated);
     }
 
     @DeleteMapping("/{id}")

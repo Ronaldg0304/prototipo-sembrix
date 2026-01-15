@@ -2,6 +2,7 @@ package com.sena.sembrix.common.web;
 
 import com.sena.sembrix.exception.BadRequestException;
 import com.sena.sembrix.exception.ResourceNotFoundException;
+import com.sena.sembrix.exception.InsufficientStockException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -23,6 +24,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ApiError> handleBadRequest(BadRequestException ex) {
         return ResponseHelper.error(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(InsufficientStockException.class)
+    public ResponseEntity<ApiError> handleInsufficientStock(InsufficientStockException ex) {
+        return ResponseHelper.error(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(org.springframework.security.authentication.DisabledException.class)
+    public ResponseEntity<ApiError> handleDisabled(org.springframework.security.authentication.DisabledException ex) {
+        return ResponseHelper.error(HttpStatus.FORBIDDEN, "Su cuenta ha sido suspendida. Por favor, contacte al administrador.");
+    }
+
+    @ExceptionHandler(org.springframework.security.authentication.LockedException.class)
+    public ResponseEntity<ApiError> handleLocked(org.springframework.security.authentication.LockedException ex) {
+        return ResponseHelper.error(HttpStatus.FORBIDDEN, "Su cuenta está bloqueada.");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

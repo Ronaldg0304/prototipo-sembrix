@@ -58,14 +58,22 @@ public class UserServiceImpl implements UserService {
             if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
                 throw new IllegalArgumentException("Email already in use: " + dto.getEmail());
             }
+            u.setEmail(dto.getEmail());
         }
-        u.setFirstName(dto.getFirstName());
-        u.setMiddleName(dto.getMiddleName());
-        u.setLastName(dto.getLastName());
-        u.setSecondLastName(dto.getSecondLastName());
-        u.setEmail(dto.getEmail());
-        u.setRole(Role.valueOf(dto.getRole()));
-        u.setStatus(Status.valueOf(dto.getStatus()));
+        
+        if (dto.getFirstName() != null) u.setFirstName(dto.getFirstName());
+        if (dto.getMiddleName() != null) u.setMiddleName(dto.getMiddleName());
+        if (dto.getLastName() != null) u.setLastName(dto.getLastName());
+        if (dto.getSecondLastName() != null) u.setSecondLastName(dto.getSecondLastName());
+        
+        if (dto.getRole() != null) {
+            u.setRole(Role.valueOf(dto.getRole()));
+        }
+        
+        if (dto.getStatus() != null) {
+            u.setStatus(Status.valueOf(dto.getStatus()));
+        }
+        
         UserEntity saved = userRepository.save(u);
         return userMapper.toDto(saved);
     }

@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/market-data")
+@RequestMapping("/api/v1/market-data")
+@CrossOrigin(origins = "http://localhost:5173")
 public class MarketDataController {
 
     private final MarketDataService service;

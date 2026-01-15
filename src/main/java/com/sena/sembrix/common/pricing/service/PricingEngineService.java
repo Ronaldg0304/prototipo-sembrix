@@ -35,16 +35,16 @@ public class PricingEngineService {
 
         if (producerPrice < unitCost) {
             recommendation = "Alerta Crítica: Tu precio está por debajo del costo de producción. Estás perdiendo dinero.";
-            color = "DANGER";
+            color = "red";
         } else if (marketAvg > 0 && producerPrice > (marketAvg * 1.3)) {
             recommendation = "Advertencia: Tu precio es un 30% superior al promedio regional. Riesgo de baja rotación.";
-            color = "WARNING";
+            color = "yellow";
         } else if (margin < 20) {
             recommendation = "Sugerencia: Tu margen de ganancia es menor al 20%. Revisa tus gastos operativos.";
-            color = "WARNING";
+            color = "yellow";
         } else {
             recommendation = "Precio Saludable: Tu posición competitiva y margen son óptimos.";
-            color = "SUCCESS";
+            color = "green";
         }
 
         return PriceAnalysisResponseDTO.builder()

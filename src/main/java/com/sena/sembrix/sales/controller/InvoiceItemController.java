@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/invoice-items")
+@RequestMapping("/api/v1/invoice-items")
+@CrossOrigin(origins = "http://localhost:5173")
 public class InvoiceItemController {
 
     private final InvoiceItemService service;

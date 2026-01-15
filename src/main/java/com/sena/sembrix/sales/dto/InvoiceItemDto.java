@@ -16,5 +16,6 @@ public class InvoiceItemDto {
     private Double subtotal;
     private Long invoiceId;
     private Long inventoryId;
+    private String productName;
 }
 

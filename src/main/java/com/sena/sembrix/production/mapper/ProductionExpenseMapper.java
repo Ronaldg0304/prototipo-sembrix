@@ -11,6 +11,7 @@ public class ProductionExpenseMapper {
         if (dto == null) return null;
         ProductionExpense e = new ProductionExpense();
         e.setId(dto.getId());
+        e.setDescription(dto.getDescription());
         e.setTotalAmount(dto.getTotalAmount());
         return e;
     }
@@ -19,6 +20,7 @@ public class ProductionExpenseMapper {
         if (entity == null) return null;
         ProductionExpenseDto dto = new ProductionExpenseDto();
         dto.setId(entity.getId());
+        dto.setDescription(entity.getDescription());
         dto.setTotalAmount(entity.getTotalAmount());
         return dto;
     }

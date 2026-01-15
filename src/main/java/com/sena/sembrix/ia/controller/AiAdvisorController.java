@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/advisor")
+@RequestMapping("/api/v1/advisor")
 @RequiredArgsConstructor
 public class AiAdvisorController {
 
@@ -23,6 +23,20 @@ public class AiAdvisorController {
 
         String question = request.get("question");
         String advice = aiService.getAiAdvice(inventoryId, question);
+
+        return ResponseHelper.ok(advice);
+    }
+
+    @PostMapping("/chat")
+    public ResponseEntity<ApiResponse<String>> askGeneralAdvisor(
+            @RequestParam(required = false) Long profileId,
+            @RequestBody Map<String, String> request) {
+
+        String question = request.get("question");
+        
+        // If profileId is null, we might need to handle it (e.g. error or default)
+        // For now, let's assume it's passed from frontend
+        String advice = aiService.getGeneralAdvice(profileId, question);
 
         return ResponseHelper.ok(advice);
     }

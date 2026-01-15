@@ -12,6 +12,7 @@ public interface MarketPriceService {
     List<MarketPriceDto> findByProductId(Long productId);
     List<MarketPriceDto> findByRegion(String region);
     List<MarketPriceDto> findAll();
+    MarketPriceDto update(Long id, MarketPriceDto dto);
     void delete(Long id);
     Optional<MarketPriceDto> getRegionalPrice(Long id, String region);
 }

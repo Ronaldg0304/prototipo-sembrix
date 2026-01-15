@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/inventory")
+@RequestMapping("/api/v1/inventory")
+@CrossOrigin(origins = "http://localhost:5173")
 public class InventoryController {
 
     private final InventoryService service;
@@ -49,8 +50,13 @@ public class InventoryController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAll() {
-        List<InventoryDto> list = service.findAll();
+    public ResponseEntity<?> getAll(@RequestParam(required = false) Long profileProducerId) {
+        List<InventoryDto> list;
+        if (profileProducerId != null) {
+            list = service.findByProfileProducerId(profileProducerId);
+        } else {
+            list = service.findAll();
+        }
         return ResponseHelper.ok(list);
     }
 

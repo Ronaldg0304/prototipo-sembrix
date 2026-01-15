@@ -49,6 +49,9 @@ public class InvoiceItemMapper {
         }
         if (entity.getInventory() != null) {
             dto.setInventoryId(entity.getInventory().getId());
+            if (entity.getInventory().getProduct() != null) {
+                dto.setProductName(entity.getInventory().getProduct().getName());
+            }
         }
         return dto;
     }

@@ -17,5 +17,7 @@ public class MarketPriceDto {
     private Double minPrice;
     private String trend;
     private Long productId;
+    private String productName;
+    private String productCategory;
 }
 
