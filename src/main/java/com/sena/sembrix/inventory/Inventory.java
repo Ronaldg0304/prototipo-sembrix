@@ -26,6 +26,7 @@ public class Inventory extends Auditable {
 
     private Double currentStock;
     private Double unitPrice;
+    private java.math.BigDecimal unitProductionCost;
     private Double alertThreshold;
     private LocalDateTime lastUpdated;
 

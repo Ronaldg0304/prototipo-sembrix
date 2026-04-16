@@ -2,9 +2,9 @@ package com.sena.sembrix.common.pricing.service;
 
 import com.sena.sembrix.common.pricing.dto.PriceAnalysisResponseDTO;
 import com.sena.sembrix.inventory.Inventory;
-import com.sena.sembrix.market.dto.MarketPriceDto;
-import com.sena.sembrix.market.service.MarketPriceService;
-import com.sena.sembrix.production.service.ProductionExpenseService;
+import com.sena.sembrix.market.application.dto.MarketPriceDto;
+import com.sena.sembrix.market.application.service.MarketPriceService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,12 +12,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PricingEngineService {
 
-    private final ProductionExpenseService expenseService;
+    // private final ProductionExpenseService expenseService;
     private final MarketPriceService marketPriceService;
 
     public PriceAnalysisResponseDTO analyzeInventoryPrice(Inventory inventory) {
         // 1. Calcular Costo de Producción
-        double unitCost = expenseService.calculateUnitCost(inventory.getId(), inventory.getCurrentStock());
+        double unitCost = inventory.getUnitProductionCost() != null 
+                ? inventory.getUnitProductionCost().doubleValue() 
+                : 0.0;
 
         // 2. Obtener Referencia de Mercado (si existe)
         double marketAvg = marketPriceService.getRegionalPrice(

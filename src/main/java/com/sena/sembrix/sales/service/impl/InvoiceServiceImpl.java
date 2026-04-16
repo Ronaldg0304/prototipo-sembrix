@@ -1,5 +1,6 @@
 package com.sena.sembrix.sales.service.impl;
 
+import com.sena.sembrix.common.web.PagedResponse;
 import com.sena.sembrix.sales.Invoice;
 import com.sena.sembrix.sales.InvoiceItem;
 import com.sena.sembrix.sales.Sale;
@@ -16,7 +17,9 @@ import com.sena.sembrix.exception.InsufficientStockException;
 import com.sena.sembrix.inventory.Inventory;
 import com.sena.sembrix.inventory.repository.InventoryRepository;
 import com.sena.sembrix.identity.ProfileProducer;
-import com.sena.sembrix.production.repository.ProductionExpenseItemRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,20 +36,17 @@ public class InvoiceServiceImpl implements InvoiceService {
     private final InvoiceMapper mapper;
     private final InventoryRepository inventoryRepository;
     private final SaleRepository saleRepository;
-    private final ProductionExpenseItemRepository expenseItemRepository;
 
     public InvoiceServiceImpl(InvoiceRepository repository,
                            InvoiceItemRepository invoiceItemRepository,
                            InvoiceMapper mapper,
                            InventoryRepository inventoryRepository,
-                           SaleRepository saleRepository,
-                           ProductionExpenseItemRepository expenseItemRepository) {
+                           SaleRepository saleRepository) {
         this.repository = repository;
         this.invoiceItemRepository = invoiceItemRepository;
         this.mapper = mapper;
         this.inventoryRepository = inventoryRepository;
         this.saleRepository = saleRepository;
-        this.expenseItemRepository = expenseItemRepository;
     }
 
     @Override
@@ -126,21 +126,10 @@ public class InvoiceServiceImpl implements InvoiceService {
         List<InvoiceItem> items = invoiceItemRepository.findByInvoiceId(invoice.getId());
 
         // Calculate total cost from production expenses
+        // Calculate total cost from unit production cost in inventory
         for (InvoiceItem item : items) {
-            List<Object> expenseItems = expenseItemRepository.findByInventoryId(item.getInventory().getId()).stream()
-                    .map(Object.class::cast)
-                    .toList();
-            for (Object obj : expenseItems) {
-                // The expense items are associated with this inventory
-                // Sum up the amounts if they exist
-                if (obj instanceof com.sena.sembrix.production.ProductionExpenseItem) {
-                    com.sena.sembrix.production.ProductionExpenseItem expenseItem =
-                        (com.sena.sembrix.production.ProductionExpenseItem) obj;
-                    // Only add expenses for items in this invoice
-                    if (expenseItem.getInventory().getId().equals(item.getInventory().getId())) {
-                        totalCost += expenseItem.getAmount() != null ? expenseItem.getAmount() : 0.0;
-                    }
-                }
+            if (item.getInventory().getUnitProductionCost() != null) {
+                totalCost += item.getInventory().getUnitProductionCost().doubleValue() * item.getQuantity();
             }
         }
 
@@ -213,5 +202,79 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
         repository.deleteById(id);
     }
-}
 
+    @Override
+    public PagedResponse<InvoiceDto> findByCustomerIdPaginated(Long customerId, int pageNo, int pageSize, String sortBy, String sortDir) {
+        Sort.Direction direction = "desc".equalsIgnoreCase(sortDir) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Sort sort = Sort.by(direction, sortBy);
+        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, sort);
+
+        Page<Invoice> page = repository.findByCustomerId(customerId, pageRequest);
+        List<InvoiceDto> dtos = page.getContent().stream()
+                .map(this::buildInvoiceDtoWithItems)
+                .collect(Collectors.toList());
+
+        return PagedResponse.<InvoiceDto>builder()
+                .content(dtos)
+                .page(page.getNumber())
+                .size(page.getSize())
+                .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
+                .last(page.isLast())
+                .first(page.isFirst())
+                .numberOfElements(page.getNumberOfElements())
+                .hasNext(page.hasNext())
+                .hasPrevious(page.hasPrevious())
+                .build();
+    }
+
+//    @Override
+//    public PagedResponse<InvoiceDto> findByProfileProducerIdPaginated(Long profileProducerId, int pageNo, int pageSize, String sortBy, String sortDir) {
+//        Sort.Direction direction = "desc".equalsIgnoreCase(sortDir) ? Sort.Direction.DESC : Sort.Direction.ASC;
+//        Sort sort = Sort.by(direction, sortBy);
+//        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, sort);
+//
+//        Page<Invoice> page = repository.findByProfileProducerId(profileProducerId, pageRequest);
+//        List<InvoiceDto> dtos = page.getContent().stream()
+//                .map(this::buildInvoiceDtoWithItems)
+//                .collect(Collectors.toList());
+//
+//        return PagedResponse.<InvoiceDto>builder()
+//                .content(dtos)
+//                .page(page.getNumber())
+//                .size(page.getSize())
+//                .totalElements(page.getTotalElements())
+//                .totalPages(page.getTotalPages())
+//                .last(page.isLast())
+//                .first(page.isFirst())
+//                .numberOfElements(page.getNumberOfElements())
+//                .hasNext(page.hasNext())
+//                .hasPrevious(page.hasPrevious())
+//                .build();
+//    }
+
+    @Override
+    public PagedResponse<InvoiceDto> findAllPaginated(int pageNo, int pageSize, String sortBy, String sortDir) {
+        Sort.Direction direction = "desc".equalsIgnoreCase(sortDir) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Sort sort = Sort.by(direction, sortBy);
+        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, sort);
+
+        Page<Invoice> page = repository.findAll(pageRequest);
+        List<InvoiceDto> dtos = page.getContent().stream()
+                .map(this::buildInvoiceDtoWithItems)
+                .collect(Collectors.toList());
+
+        return PagedResponse.<InvoiceDto>builder()
+                .content(dtos)
+                .page(page.getNumber())
+                .size(page.getSize())
+                .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
+                .last(page.isLast())
+                .first(page.isFirst())
+                .numberOfElements(page.getNumberOfElements())
+                .hasNext(page.hasNext())
+                .hasPrevious(page.hasPrevious())
+                .build();
+    }
+}

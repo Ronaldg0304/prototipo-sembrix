@@ -5,7 +5,6 @@ import com.sena.sembrix.common.web.ResponseHelper;
 import com.sena.sembrix.security.dto.AuthenticationRequest;
 import com.sena.sembrix.security.dto.AuthenticationResponse;
 import com.sena.sembrix.security.service.AuthenticationService;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

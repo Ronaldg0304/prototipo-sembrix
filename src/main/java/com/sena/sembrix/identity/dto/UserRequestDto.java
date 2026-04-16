@@ -22,4 +22,9 @@ public class UserRequestDto {
 
     private String role;
     private String status;
+
+    // Campos para el perfil de productor (opcionales)
+    private String farmName;
+    private String region;
+    private String municipality;
 }

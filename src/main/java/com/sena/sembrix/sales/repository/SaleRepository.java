@@ -1,6 +1,8 @@
 package com.sena.sembrix.sales.repository;
 
 import com.sena.sembrix.sales.Sale;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,5 +13,8 @@ import java.util.Optional;
 public interface SaleRepository extends JpaRepository<Sale, Long> {
     List<Sale> findByProfileProducerId(Long profileProducerId);
     Optional<Sale> findByInvoiceId(Long invoiceId);
+
+    // Paginated methods
+    Page<Sale> findByProfileProducerId(Long profileProducerId, Pageable pageable);
 }
 

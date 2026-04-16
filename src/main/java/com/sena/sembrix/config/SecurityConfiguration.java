@@ -38,7 +38,8 @@ public class SecurityConfiguration {
                                 "/webjars/**")
 
                         .permitAll()
-                        .requestMatchers("/api/users/**").hasAuthority(Role.ADMIN.name())
+                        .requestMatchers("/api/v1/admin/**").hasAuthority(Role.ADMIN.name())
+                        .requestMatchers("/api/v1/users/**").hasAuthority(Role.ADMIN.name())
                         .requestMatchers("/api/inventory/**").hasAnyAuthority(Role.PRODUCER.name(), Role.ADMIN.name())
 
                         .anyRequest().authenticated())

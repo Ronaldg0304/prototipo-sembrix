@@ -1,5 +1,6 @@
 package com.sena.sembrix.inventory.service;
 
+import com.sena.sembrix.common.web.PagedResponse;
 import com.sena.sembrix.inventory.Inventory;
 import com.sena.sembrix.inventory.dto.InventoryDto;
 
@@ -14,5 +15,10 @@ public interface InventoryService {
     List<InventoryDto> findAll();
     InventoryDto update(Long id, InventoryDto dto);
     void delete(Long id);
+
+    // Métodos paginados
+    PagedResponse<InventoryDto> findByProfileProducerIdPaginated(Long profileProducerId, int pageNo, int pageSize, String sortBy, String sortDir);
+    PagedResponse<InventoryDto> findByProductIdPaginated(Long productId, int pageNo, int pageSize, String sortBy, String sortDir);
+    PagedResponse<InventoryDto> findAllPaginated(int pageNo, int pageSize, String sortBy, String sortDir);
 }
 

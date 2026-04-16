@@ -7,8 +7,6 @@ import com.sena.sembrix.identity.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("api/v1/users")
 @CrossOrigin(origins = "http://localhost:5173")
@@ -33,9 +31,18 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAll() {
-        List<UserResponseDto> list = userService.findAll();
-        return ResponseHelper.ok(list);
+    public ResponseEntity<com.sena.sembrix.common.web.ApiResponse<com.sena.sembrix.common.web.PagedResponse<UserResponseDto>>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir
+    ) {
+        com.sena.sembrix.common.web.PagedResponse<UserResponseDto> response = userService.findAllPaginated(page, size, sortBy, sortDir);
+        return ResponseEntity.ok(com.sena.sembrix.common.web.ApiResponse.<com.sena.sembrix.common.web.PagedResponse<UserResponseDto>>builder()
+                .success(true)
+                .message("Users retrieved successfully")
+                .data(response)
+                .build());
     }
 
     @PutMapping("/{id}")

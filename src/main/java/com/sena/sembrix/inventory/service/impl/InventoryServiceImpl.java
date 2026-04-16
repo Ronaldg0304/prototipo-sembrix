@@ -1,11 +1,15 @@
 package com.sena.sembrix.inventory.service.impl;
 
+import com.sena.sembrix.common.web.PagedResponse;
 import com.sena.sembrix.inventory.Inventory;
 import com.sena.sembrix.inventory.dto.InventoryDto;
 import com.sena.sembrix.inventory.mapper.InventoryMapper;
 import com.sena.sembrix.inventory.repository.InventoryRepository;
 import com.sena.sembrix.inventory.service.InventoryService;
 import com.sena.sembrix.exception.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,5 +77,80 @@ public class InventoryServiceImpl implements InventoryService {
             throw new ResourceNotFoundException("Inventory not found");
         }
         repository.deleteById(id);
+    }
+
+    @Override
+    public PagedResponse<InventoryDto> findByProfileProducerIdPaginated(Long profileProducerId, int pageNo, int pageSize, String sortBy, String sortDir) {
+        Sort.Direction direction = "desc".equalsIgnoreCase(sortDir) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Sort sort = Sort.by(direction, sortBy);
+        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, sort);
+
+        Page<Inventory> page = repository.findByProfileProducerId(profileProducerId, pageRequest);
+        List<InventoryDto> dtos = page.getContent().stream()
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
+
+        return PagedResponse.<InventoryDto>builder()
+                .content(dtos)
+                .page(page.getNumber())
+                .size(page.getSize())
+                .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
+                .last(page.isLast())
+                .first(page.isFirst())
+                .numberOfElements(page.getNumberOfElements())
+                .hasNext(page.hasNext())
+                .hasPrevious(page.hasPrevious())
+                .build();
+    }
+
+    @Override
+    public PagedResponse<InventoryDto> findByProductIdPaginated(Long productId, int pageNo, int pageSize, String sortBy, String sortDir) {
+        Sort.Direction direction = "desc".equalsIgnoreCase(sortDir) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Sort sort = Sort.by(direction, sortBy);
+        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, sort);
+
+        Page<Inventory> page = repository.findByProductId(productId, pageRequest);
+        List<InventoryDto> dtos = page.getContent().stream()
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
+
+        return PagedResponse.<InventoryDto>builder()
+                .content(dtos)
+                .page(page.getNumber())
+                .size(page.getSize())
+                .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
+                .last(page.isLast())
+                .first(page.isFirst())
+                .numberOfElements(page.getNumberOfElements())
+                .hasNext(page.hasNext())
+                .hasPrevious(page.hasPrevious())
+                .build();
+    }
+
+    @Override
+    public PagedResponse<InventoryDto> findAllPaginated(int pageNo, int pageSize, String sortBy, String sortDir) {
+        Sort.Direction direction = "desc".equalsIgnoreCase(sortDir) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Sort sort = Sort.by(direction, sortBy);
+        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, sort);
+
+        Page<Inventory> page = repository.findAll(pageRequest);
+        List<InventoryDto> dtos = page.getContent().stream()
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
+
+        return PagedResponse.<InventoryDto>builder()
+                .content(dtos)
+                .page(page.getNumber())
+                .size(page.getSize())
+                .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
+                .last(page.isLast())
+                .first(page.isFirst())
+                .numberOfElements(page.getNumberOfElements())
+                .hasNext(page.hasNext())
+                .hasPrevious(page.hasPrevious())
+                .build();
     }
 }
