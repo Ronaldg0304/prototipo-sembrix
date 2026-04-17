@@ -10,7 +10,7 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // Aplica a todos los endpoints de la API
-                .allowedOrigins("http://localhost:5173") // Permite solo a tu frontend Svelte
+                .allowedOrigins("http://localhost:5173", "https://tu-frontend.vercel.app") // Permite solo a tu frontend Svelte
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH") // Verbos permitidos
                 .allowedHeaders("*") // Permite todos los headers (Authorization, X-API-KEY, etc.)
                 .allowCredentials(true); // Permite enviar cookies o credenciales si fuera necesario
